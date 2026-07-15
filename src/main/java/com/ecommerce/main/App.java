@@ -6,10 +6,13 @@ import java.util.Scanner;
 import com.ecommerce.model.Product;
 import com.ecommerce.service.ProductService;
 import com.ecommerce.serviceimpl.ProductServiceImpl;
+import com.ecommerce.ui.ConsoleMenu;
 
 public class App
 {
 	public static void main(String[] args) {
+		ConsoleMenu system = new ConsoleMenu();
+		system.start();
 
 		Scanner scanner = new Scanner(System.in);
 
