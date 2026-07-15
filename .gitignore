@@ -1,0 +1,13 @@
+# Maven build output
+target/
+
+# Eclipse settings (user-specific)
+.settings/
+src/main/resources/db.properties
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Log files
+*.log
