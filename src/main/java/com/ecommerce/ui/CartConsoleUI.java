@@ -1,17 +1,21 @@
 package com.ecommerce.ui;
 
 import java.util.Scanner;
+
 import com.ecommerce.dao.CartDao;
 import com.ecommerce.daoimp.CartDaoImpl;
+import com.ecommerce.model.Seller;
 
 public class CartConsoleUI {
     private final Scanner scanner;
+    private Seller seller;
     private final CartDao cartDao = new CartDaoImpl();
     private final int loggedInCustomerId;
 
-    public CartConsoleUI(Scanner scanner, int customerId) {
+    public CartConsoleUI(Scanner scanner, Seller seller) {
         this.scanner = scanner;
-        this.loggedInCustomerId = customerId;
+        this.seller = seller;
+        this.loggedInCustomerId = seller.getSellerId();
     }
 
     public void showMenu() {

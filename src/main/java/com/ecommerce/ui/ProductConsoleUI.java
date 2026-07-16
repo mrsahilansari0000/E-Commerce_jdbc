@@ -2,22 +2,26 @@ package com.ecommerce.ui;
 
 import java.util.List;
 import java.util.Scanner;
-import com.ecommerce.model.Product;
-import com.ecommerce.service.ProductService;
-import com.ecommerce.serviceimpl.ProductServiceImpl;
+
 import com.ecommerce.dao.CartDao;
 import com.ecommerce.daoimp.CartDaoImpl;
+import com.ecommerce.model.Product;
+import com.ecommerce.model.Seller;
+import com.ecommerce.service.ProductService;
+import com.ecommerce.serviceimpl.ProductServiceImpl;
 
 public class ProductConsoleUI {
-    private final Scanner scanner;
+    private Scanner scanner;
+    private Seller seller;
     private final ProductService productService = new ProductServiceImpl();
     private final CartDao cartDao = new CartDaoImpl(); // Added to access cart DB actions
-    private final int loggedInCustomerId;              // Added to track who is purchasing
+    private int loggedInCustomerId;              // Added to track who is purchasing
 
     // Updated constructor to accept the logged-in user's ID
-    public ProductConsoleUI(Scanner scanner, int customerId) {
+    public ProductConsoleUI(Scanner scanner, Seller seller) {
         this.scanner = scanner;
-        this.loggedInCustomerId = customerId;
+        this.seller = seller;
+        this.loggedInCustomerId = seller.getSellerId();
     }
 
     public void showMenu() {

@@ -11,17 +11,17 @@ public class Seller {
 	private String phone;
 	private String shopName;
 	private String address;
+	
+	public Seller() {
+		
+	}
 
-	public Seller(int sellerId, String name, String email, String password, String phone, String shopName,
-			String address) {
+	public Seller(int sellerId, String name, String email, String password) {
 
 		this.sellerId = sellerId;
 		this.name = name;
 		this.email = email;
 		this.password = password;
-		this.phone = phone;
-		this.shopName = shopName;
-		this.address = address;
 	}
 
 	public int getSellerId() {
@@ -50,6 +50,12 @@ public class Seller {
 
 	public String getAddress() {
 		return address;
+	}
+
+	@Override
+	public String toString() {
+		return "Seller [sellerId=" + sellerId + ", name=" + name + ", email=" + email + ", password=" + password
+				+ ", phone=" + phone + ", shopName=" + shopName + ", address=" + address + "]";
 	}
 	
 	
