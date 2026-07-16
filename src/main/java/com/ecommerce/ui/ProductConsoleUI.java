@@ -61,7 +61,7 @@ public class ProductConsoleUI {
                     System.out.print("Enter Product ID: ");
                     productId = scanner.nextLong();
                     int stock = productService.showAvailableStock(productId);
-                    System.out.println(stock == -1 ? "Product Not Found." : "Available Stock: " + stock);
+                    System.out.println(stock <= 0 ? "Product Not Found." : "Available Stock: " + stock);
                     break;
                     
                 case 4: // New Add to Cart logic inside Product Management
@@ -71,7 +71,7 @@ public class ProductConsoleUI {
                     // Optional validation check: Verify stock before sending to Cart table
                     int availableStock = productService.showAvailableStock(prodId);
                     if (availableStock == -1) {
-                        System.out.println("❌ Error: That Product ID does not exist.");
+                        System.err.println("❌ Error: That Product ID does not exist.");
                         break;
                     }
                     
@@ -79,9 +79,9 @@ public class ProductConsoleUI {
                     int qty = scanner.nextInt();
                     
                     if (qty > availableStock) {
-                        System.out.println("❌ Insufficient Stock! Only " + availableStock + " items available.");
+                        System.err.println("❌ Insufficient Stock! Only " + availableStock + " items available.");
                     } else if (qty <= 0) {
-                        System.out.println("❌ Quantity must be greater than 0.");
+                        System.err.println("❌ Quantity must be greater than 0.");
                     } else {
                         // Executes your database insertion script automatically
                         cartDao.addProductIntoCartDB(loggedInCustomerId, prodId, qty);
