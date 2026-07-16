@@ -31,10 +31,9 @@ public class UserDao {
 
 	public boolean logIn(String email, String password) {
 
-	    try (Connection connection = DBconfig.getConnection();
-	         PreparedStatement pstmt =
-	             connection.prepareStatement(CustomerQueries.USER_LOGIN_QUERY)) {
-
+	    try {
+            Connection connection = DBconfig.getConnection();
+	        PreparedStatement pstmt = connection.prepareStatement(CustomerQueries.USER_LOGIN_QUERY);
 	        pstmt.setString(1, email);
 	        pstmt.setString(2, password);
 
