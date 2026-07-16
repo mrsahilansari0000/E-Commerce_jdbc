@@ -2,132 +2,87 @@ package com.ecommerce.model;
 
 import java.time.LocalDateTime;
 
-import com.ecommerce.constants.OrderStatus;
-import com.ecommerce.constants.PaymentStatus;
+public class Order {
 
-
-public class Order
-{
     private long orderId;
     private long userId;
     private LocalDateTime orderDate;
     private double totalAmount;
-    private OrderStatus status;
-    private PaymentStatus paymentStatus;
+    private String status;
+    private String paymentStatus;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public Order()
-    {
-
+    public Order() {
     }
 
-    public Order(long orderId, long userId, LocalDateTime orderDate,
-                 double totalAmount, OrderStatus status,
-                 PaymentStatus paymentStatus,
-                 LocalDateTime createdAt,
-                 LocalDateTime updatedAt)
-    {
-        this.orderId = orderId;
+    public Order(long userId, double totalAmount) {
         this.userId = userId;
-        this.orderDate = orderDate;
         this.totalAmount = totalAmount;
-        this.status = status;
-        this.paymentStatus = paymentStatus;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
     }
 
-    public long getOrderId()
-    {
+    public long getOrderId() {
         return orderId;
     }
 
-    public void setOrderId(long orderId)
-    {
+    public void setOrderId(long orderId) {
         this.orderId = orderId;
     }
 
-    public long getUserId()
-    {
+    public long getUserId() {
         return userId;
     }
 
-    public void setUserId(long userId)
-    {
+    public void setUserId(long userId) {
         this.userId = userId;
     }
 
-    public LocalDateTime getOrderDate()
-    {
+    public LocalDateTime getOrderDate() {
         return orderDate;
     }
 
-    public void setOrderDate(LocalDateTime orderDate)
-    {
+    public void setOrderDate(LocalDateTime orderDate) {
         this.orderDate = orderDate;
     }
 
-    public double getTotalAmount()
-    {
+    public double getTotalAmount() {
         return totalAmount;
     }
 
-    public void setTotalAmount(double totalAmount)
-    {
-        this.totalAmount = totalAmount;
+    public void setTotalAmount(double totalAmount2) {
+        this.totalAmount = totalAmount2;
     }
 
-    public OrderStatus getStatus()
-    {
+    public String getStatus() {
         return status;
     }
 
-    public void setStatus(OrderStatus status)
-    {
+    public void setStatus(String status) {
         this.status = status;
     }
 
-    public PaymentStatus getPaymentStatus()
-    {
+    public String getPaymentStatus() {
         return paymentStatus;
     }
 
-    public void setPaymentStatus(PaymentStatus paymentStatus)
-    {
+    public void setPaymentStatus(String paymentStatus) {
         this.paymentStatus = paymentStatus;
     }
 
-    public LocalDateTime getCreatedAt()
-    {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt)
-    {
+    public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 
-    public LocalDateTime getUpdatedAt()
-    {
+    public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(LocalDateTime updatedAt)
-    {
+    public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
-    }
-
-    @Override
-    public String toString()
-    {
-        return "Order [orderId=" + orderId
-                + ", userId=" + userId
-                + ", orderDate=" + orderDate
-                + ", totalAmount=" + totalAmount
-                + ", status=" + status
-                + ", paymentStatus=" + paymentStatus
-                + "]";
     }
 
 }

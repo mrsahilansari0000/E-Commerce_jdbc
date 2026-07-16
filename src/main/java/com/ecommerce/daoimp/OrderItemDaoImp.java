@@ -17,12 +17,12 @@ import com.ecommerce.model.OrderItem;
 public class OrderItemDaoImp implements OrderItemDao
 {
 
-    private Connection connection;
+//    private Connection connection;
 
-    public OrderItemDaoImp()
-    {
-        connection = DBconfig.getConnection();
-    }
+//    public OrderItemDaoImp()
+//    {
+//        connection = DBconfig.getConnection();
+//    }
 
     @Override
     public boolean addOrderItems(List<OrderItem> orderItems)
@@ -31,6 +31,7 @@ public class OrderItemDaoImp implements OrderItemDao
 
         try
         {
+        	Connection connection = DBconfig.getConnection();
             PreparedStatement ps = connection.prepareStatement(query);
 
             for(OrderItem item : orderItems)
@@ -65,6 +66,7 @@ public class OrderItemDaoImp implements OrderItemDao
 
         try
         {
+        	Connection connection = DBconfig.getConnection();
             PreparedStatement ps = connection.prepareStatement(query);
 
             ps.setLong(1, orderId);
@@ -105,6 +107,7 @@ public class OrderItemDaoImp implements OrderItemDao
 
         try
         {
+        	Connection connection = DBconfig.getConnection();
             PreparedStatement ps = connection.prepareStatement(query);
 
             ps.setLong(1, orderId);

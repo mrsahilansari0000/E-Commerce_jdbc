@@ -29,11 +29,11 @@ public class DBconfig
 
 	// Creating the Method to connect the database and returning the connection
 	// after successfully connect
-	public static Connection getConnection() {
+	public static Connection getConnection() throws SQLException {
 
 		// Checking if dbConnection has the connection then I will directly return or
 		// else I will create new connection
-		if (dbConnection == null) {
+		if (dbConnection == null || dbConnection.isClosed()) {
 			try {
 				dbConnection = DriverManager.getConnection(properties.getProperty("db.url"),
 						properties.getProperty("db.username"), properties.getProperty("db.password"));

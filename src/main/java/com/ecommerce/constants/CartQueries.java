@@ -23,4 +23,10 @@ public class CartQueries {
 	public final static String FIND_CUSTOMER_ID_IN_CART = 
 			"SELECT * FROM cart WHERE customer_id = ?";
 	
+	public static final String GET_CART_ITEMS =
+            "SELECT * FROM cart WHERE customer_id = ?";
+	
+	public static final String CLEAR_CART_ITEMS =
+            "DELETE FROM cart WHERE customer_id = ?";
+	
 }

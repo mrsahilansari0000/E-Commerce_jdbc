@@ -1,9 +1,22 @@
 package com.ecommerce.service;
 
-import com.ecommerce.model.Order;
+import java.util.List;
 
-public interface OrderService
-{
-	public boolean createOrder(Order order);
-	
+import com.ecommerce.model.Order;
+import com.ecommerce.model.OrderItem;
+
+public interface OrderService {
+
+    long placeOrder(long userId);
+
+    Order getOrderById(long orderId);
+
+    List<Order> getOrdersByUserId(long userId);
+
+    List<OrderItem> getOrderItems(long orderId);
+
+    boolean updateOrderStatus(long orderId, String status);
+
+    boolean cancelOrder(long orderId, long userId);
+
 }

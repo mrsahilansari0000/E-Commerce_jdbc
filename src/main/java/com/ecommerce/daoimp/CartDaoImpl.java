@@ -4,21 +4,22 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.ecommerce.config.DBconfig;
 import com.ecommerce.constants.CartQueries;
 import com.ecommerce.dao.CartDao;
+import com.ecommerce.model.CartItem;
 
-public class CartDaoImpl implements CartDao {
-
-	DBconfig dbConfig = new DBconfig();
-
-	Connection connection = dbConfig.getConnection();
+public class CartDaoImpl implements CartDao
+{
 
 	@Override
 	public boolean findCustomerByIdFromCart(int customer_id) {
 
 		try {
+			Connection connection = DBconfig.getConnection();
 
 			PreparedStatement preparedStatement = connection.prepareStatement(CartQueries.FIND_CUSTOMER_ID_IN_CART);
 			preparedStatement.setInt(1, customer_id);
@@ -37,6 +38,7 @@ public class CartDaoImpl implements CartDao {
 	public void addProductIntoCartDB(int customer_id, int product_id, int quantity) {
 
 		try {
+			Connection connection = DBconfig.getConnection();
 
 			connection.setAutoCommit(false);
 
@@ -57,11 +59,6 @@ public class CartDaoImpl implements CartDao {
 
 		} catch (SQLException e) {
 			System.err.println("Error from addProductIntoCartDB: " + e.getMessage());
-			try {
-				connection.rollback();
-			} catch (SQLException e1) {
-				System.err.println("Error from addProductIntoCartDB for Rollback: " + e.getMessage());
-			}
 		}
 	}
 
@@ -69,6 +66,7 @@ public class CartDaoImpl implements CartDao {
 	public void removeProductFromCartDB(int customer_id, int product_id) {
 
 		try {
+			Connection connection = DBconfig.getConnection();
 			connection.setAutoCommit(false);
 
 			PreparedStatement preparedStatement = connection.prepareStatement(CartQueries.REMOVE_PRODUCT_FROM_CART);
@@ -87,11 +85,6 @@ public class CartDaoImpl implements CartDao {
 
 		} catch (SQLException e) {
 			System.err.println("Error from removeProductFromCartDB: " + e.getMessage());
-			try {
-				connection.rollback();
-			} catch (SQLException e1) {
-				System.err.println("Error from removeProductFromCartDB for Rollback: " + e.getMessage());
-			}
 		}
 	}
 
@@ -99,7 +92,7 @@ public class CartDaoImpl implements CartDao {
 	public void searchAllCartProduct(int customer_id) {
 
 		try {
-
+			Connection connection = DBconfig.getConnection();
 			PreparedStatement preparedStatment = connection
 					.prepareStatement(CartQueries.SEARCH_ALL_CART_PROUDCTS_BY_CUSTOMER_ID);
 			preparedStatment.setInt(1, customer_id);
@@ -127,5 +120,62 @@ public class CartDaoImpl implements CartDao {
 		} catch (SQLException e) {
 			System.err.println("Error from searchAllCartProduct: " + e.getMessage());
 		}
+	}
+
+	@Override
+    public List<CartItem> getCartItems(long customerId) {
+
+        List<CartItem> cartItems = new ArrayList<>();
+
+        try {
+        	Connection connection = DBconfig.getConnection();
+			PreparedStatement ps = connection
+					.prepareStatement(CartQueries.GET_CART_ITEMS);
+
+            ps.setLong(1, customerId);
+
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+
+                CartItem item = new CartItem();
+
+                item.setCartId(rs.getInt("cart_id"));
+                item.setCustomerId(rs.getLong("customer_id"));
+                item.setProductId(rs.getLong("product_id"));
+                item.setQuantity(rs.getInt("quantity"));
+                item.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
+
+                cartItems.add(item);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return cartItems;
+    }
+	
+	@Override
+	public void clearCart(long userId) {
+
+	    try {
+	    	
+	    	Connection connection = DBconfig.getConnection();
+	         PreparedStatement preparedStatement = connection.prepareStatement(CartQueries.CLEAR_CART_ITEMS);
+
+	        preparedStatement.setLong(1, userId);
+
+	        int rowsAffected = preparedStatement.executeUpdate();
+
+	        if (rowsAffected > 0) {
+	            System.out.println("Cart cleared successfully.");
+	        } else {
+	            System.out.println("Cart is already empty.");
+	        }
+
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
 	}
 }

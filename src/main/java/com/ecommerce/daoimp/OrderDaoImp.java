@@ -4,186 +4,270 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.ecommerce.config.DBconfig;
 import com.ecommerce.constants.OrderQueries;
-import com.ecommerce.constants.OrderStatus;
-import com.ecommerce.constants.PaymentStatus;
 import com.ecommerce.dao.OrderDao;
 import com.ecommerce.model.Order;
+import com.ecommerce.model.OrderItem;
 
 public class OrderDaoImp implements OrderDao
 {
-
-	private Connection connection;
-
-	public OrderDaoImp()
-	{
-		connection = DBconfig.getConnection();
-	}
-
 	@Override
-	public long createOrder(Order order)
-	{
-		String query = OrderQueries.INSERT_ORDER;
+	public long createOrder(Order order) {
 
-		try
-		{
-			PreparedStatement ps = connection.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
+		try {
 
-			ps.setLong(1, order.getUserId());
-			ps.setDouble(2, order.getTotalAmount());
-			ps.setString(3, order.getStatus().name());
-			ps.setString(4, order.getPaymentStatus().name());
+			Connection connection = DBconfig.getConnection();
 
-			int rows = ps.executeUpdate();
+			PreparedStatement preparedStatement = connection.prepareStatement(OrderQueries.INSERT_ORDER,
+					Statement.RETURN_GENERATED_KEYS);
 
-			if (rows > 0)
-			{
-				ResultSet rs = ps.getGeneratedKeys();
+			preparedStatement.setLong(1, order.getUserId());
+			preparedStatement.setDouble(2, order.getTotalAmount());
 
-				if (rs.next())
-				{
-					return rs.getLong(1);
+			int rowsAffected = preparedStatement.executeUpdate();
+
+			if (rowsAffected > 0) {
+
+				ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
+
+				if (generatedKeys.next()) {
+
+					return generatedKeys.getLong(1);
+
 				}
+
 			}
 
-		} catch (SQLException e)
-		{
+		} catch (SQLException e) {
+
 			e.printStackTrace();
+
 		}
 
 		return -1;
 	}
-
+	
 	@Override
-	public Order getOrderById(long orderId)
-	{
-		String query = OrderQueries.GET_ORDER_BY_ID;
+	public boolean createOrderItem(OrderItem orderItem) {
 
-		try
-		{
-			PreparedStatement ps = connection.prepareStatement(query);
+	    try {
 
-			ps.setLong(1, orderId);
+	        Connection connection = DBconfig.getConnection();
 
-			ResultSet rs = ps.executeQuery();
+	        PreparedStatement preparedStatement = connection.prepareStatement(OrderQueries.INSERT_ORDER_ITEM);
 
-			if (rs.next())
-			{
-				Order order = new Order();
+	        preparedStatement.setLong(1, orderItem.getOrderId());
+	        preparedStatement.setLong(2, orderItem.getProductId());
+	        preparedStatement.setInt(3, orderItem.getQuantity());
+	        preparedStatement.setDouble(4, orderItem.getPrice());
+	        preparedStatement.setDouble(5, orderItem.getSubtotal());
 
-				order.setOrderId(rs.getLong("order_id"));
+	        int rowsAffected = preparedStatement.executeUpdate();
 
-				order.setUserId(rs.getLong("user_id"));
+	        preparedStatement.close();
 
-				order.setOrderDate(rs.getTimestamp("order_date").toLocalDateTime());
+	        return rowsAffected > 0;
 
-				order.setTotalAmount(rs.getDouble("total_amount"));
+	    } catch (SQLException e) {
 
-				order.setStatus(OrderStatus.valueOf(rs.getString("status")));
+	        e.printStackTrace();
+	    }
 
-				order.setPaymentStatus(PaymentStatus.valueOf(rs.getString("payment_status")));
-
-				order.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
-
-				order.setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
-
-				return order;
-			}
-		} catch (SQLException e)
-		{
-			e.printStackTrace();
-		}
-
-		return null;
+	    return false;
 	}
-
+	
 	@Override
-	public List<Order> getOrdersByUserId(long userId)
-	{
-		List<Order> orders = new ArrayList<>();
+	public Order getOrderById(long orderId) {
 
-		String query = OrderQueries.GET_ORDER_BY_USER_ID;
+	    Order order = null;
 
-		try
-		{
-			PreparedStatement ps = connection.prepareStatement(query);
+	    try {
 
-			ps.setLong(1, userId);
+	        Connection connection = DBconfig.getConnection();
 
-			ResultSet rs = ps.executeQuery();
+	        PreparedStatement preparedStatement =
+	                connection.prepareStatement(OrderQueries.GET_ORDER_BY_ID);
 
-			while (rs.next())
-			{
-				Order order = new Order();
+	        preparedStatement.setLong(1, orderId);
 
-				order.setOrderId(rs.getLong("order_id"));
-				order.setUserId(rs.getLong("user_id"));
-				order.setOrderDate(rs.getTimestamp("order_date").toLocalDateTime());
-				order.setTotalAmount(rs.getDouble("total_amount"));
-				order.setStatus(OrderStatus.valueOf(rs.getString("status")));
-				order.setPaymentStatus(PaymentStatus.valueOf(rs.getString("payment_status")));
-				order.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
-				order.setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
+	        ResultSet resultSet = preparedStatement.executeQuery();
 
-				orders.add(order);
-			}
-		} catch (SQLException e)
-		{
-			e.printStackTrace();
-		}
+	        if (resultSet.next()) {
 
-		return orders;
+	            order = new Order();
+
+	            order.setOrderId(resultSet.getLong("order_id"));
+	            order.setUserId(resultSet.getLong("user_id"));
+	            order.setOrderDate(resultSet.getTimestamp("order_date").toLocalDateTime());
+	            order.setTotalAmount(resultSet.getDouble("total_amount"));
+	            order.setStatus(resultSet.getString("status"));
+	            order.setPaymentStatus(resultSet.getString("payment_status"));
+	            order.setCreatedAt(resultSet.getTimestamp("created_at").toLocalDateTime());
+	            order.setUpdatedAt(resultSet.getTimestamp("updated_at").toLocalDateTime());
+
+	        }
+
+	        resultSet.close();
+	        preparedStatement.close();
+
+	    } catch (SQLException e) {
+
+	        e.printStackTrace();
+
+	    }
+
+	    return order;
 	}
-
+	
 	@Override
-	public boolean updateOrderStatus(long orderId, OrderStatus status)
-	{
-		String query = OrderQueries.UPDATE_ORDER_STATUS;
+	public List<Order> getOrdersByUserId(long userId) {
 
-		try
-		{
-			PreparedStatement ps = connection.prepareStatement(query);
+	    List<Order> orderList = new ArrayList<>();
 
-			ps.setString(1, status.name());
+	    try {
 
-			ps.setLong(2, orderId);
+	        Connection connection = DBconfig.getConnection();
 
-			int rowsUpdated = ps.executeUpdate();
+	        PreparedStatement preparedStatement =
+	                connection.prepareStatement(OrderQueries.GET_ORDER_BY_USER_ID);
 
-			return rowsUpdated > 0;
-		} catch (SQLException e)
-		{
-			e.printStackTrace();
-		}
+	        preparedStatement.setLong(1, userId);
 
-		return false;
+	        ResultSet resultSet = preparedStatement.executeQuery();
+
+	        while (resultSet.next()) {
+
+	            Order order = new Order();
+
+	            order.setOrderId(resultSet.getLong("order_id"));
+	            order.setUserId(resultSet.getLong("user_id"));
+	            order.setOrderDate(resultSet.getTimestamp("order_date").toLocalDateTime());
+	            order.setTotalAmount(resultSet.getDouble("total_amount"));
+	            order.setStatus(resultSet.getString("status"));
+	            order.setPaymentStatus(resultSet.getString("payment_status"));
+	            order.setCreatedAt(resultSet.getTimestamp("created_at").toLocalDateTime());
+	            order.setUpdatedAt(resultSet.getTimestamp("updated_at").toLocalDateTime());
+
+	            orderList.add(order);
+
+	        }
+
+	        resultSet.close();
+	        preparedStatement.close();
+
+	    } catch (SQLException e) {
+
+	        e.printStackTrace();
+
+	    }
+
+	    return orderList;
 	}
-
+	
 	@Override
-	public boolean cancelOrder(long orderId, long userId)
-	{
-		String query = OrderQueries.CANCEL_ORDER;
+	public List<OrderItem> getOrderItems(long orderId) {
 
-		try
-		{
-			PreparedStatement ps = connection.prepareStatement(query);
+	    List<OrderItem> orderItemList = new ArrayList<>();
 
-			ps.setString(1, OrderStatus.CANCELLED.name());
-			ps.setLong(2, orderId);
-			ps.setLong(3, userId);
+	    try {
 
-			int rowsUpdated = ps.executeUpdate();
+	        Connection connection = DBconfig.getConnection();
 
-			return rowsUpdated > 0;
-		} catch (SQLException e)
-		{
-			e.printStackTrace();
-		}
+	        PreparedStatement preparedStatement =
+	                connection.prepareStatement(OrderQueries.GET_ORDER_ITEMS);
 
-		return false;
+	        preparedStatement.setLong(1, orderId);
+
+	        ResultSet resultSet = preparedStatement.executeQuery();
+
+	        while (resultSet.next()) {
+
+	            OrderItem orderItem = new OrderItem();
+
+	            orderItem.setOrderItemId(resultSet.getLong("order_item_id"));
+	            orderItem.setOrderId(resultSet.getLong("order_id"));
+	            orderItem.setProductId(resultSet.getLong("product_id"));
+	            orderItem.setQuantity(resultSet.getInt("quantity"));
+	            orderItem.setPrice(resultSet.getDouble("price"));
+	            orderItem.setSubtotal(resultSet.getDouble("subtotal"));
+	            orderItem.setCreatedAt(resultSet.getTimestamp("created_at").toLocalDateTime());
+
+	            orderItemList.add(orderItem);
+
+	        }
+
+	        resultSet.close();
+	        preparedStatement.close();
+
+	    } catch (SQLException e) {
+
+	        e.printStackTrace();
+
+	    }
+
+	    return orderItemList;
 	}
+	
+	@Override
+	public boolean updateOrderStatus(long orderId, String status) {
+
+	    try {
+
+	        Connection connection = DBconfig.getConnection();
+
+	        PreparedStatement preparedStatement =
+	                connection.prepareStatement(OrderQueries.UPDATE_ORDER_STATUS);
+
+	        preparedStatement.setString(1, status);
+	        preparedStatement.setLong(2, orderId);
+
+	        int rowsAffected = preparedStatement.executeUpdate();
+
+	        preparedStatement.close();
+
+	        return rowsAffected > 0;
+
+	    } catch (SQLException e) {
+
+	        e.printStackTrace();
+
+	    }
+
+	    return false;
+	}
+	
+	@Override
+	public boolean cancelOrder(long orderId, long userId) {
+
+	    try {
+
+	        Connection connection = DBconfig.getConnection();
+
+	        PreparedStatement preparedStatement =
+	                connection.prepareStatement(OrderQueries.CANCEL_ORDER);
+
+	        preparedStatement.setLong(1, orderId);
+	        preparedStatement.setLong(2, userId);
+
+	        int rowsAffected = preparedStatement.executeUpdate();
+
+	        preparedStatement.close();
+
+	        return rowsAffected > 0;
+
+	    } catch (SQLException e) {
+
+	        e.printStackTrace();
+
+	    }
+
+	    return false;
+	}
+	
+	
 }
