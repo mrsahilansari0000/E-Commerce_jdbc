@@ -17,6 +17,11 @@ public class ProductServiceImpl implements ProductService
 
 	// Dependency on DAO layer
     private ProductDao productDao = new ProductDaoImp();
+    
+    @Override
+    public void addProduct(Product product) {
+        productDao.addProduct(product);
+    }
 
     @Override
     public List<Product> viewAvailableProducts() {

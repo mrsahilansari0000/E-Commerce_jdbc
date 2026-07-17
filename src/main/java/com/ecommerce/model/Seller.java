@@ -1,7 +1,5 @@
 package com.ecommerce.model;
 
-import java.sql.Timestamp;
-
 public class Seller {
 
 	private int sellerId;

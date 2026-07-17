@@ -12,152 +12,176 @@ import com.ecommerce.constants.ProductQueries;
 import com.ecommerce.dao.ProductDao;
 import com.ecommerce.model.Product;
 
-public class ProductDaoImp implements ProductDao {
+public class ProductDaoImp implements ProductDao
+{
 
-    @Override
-    public List<Product> viewAvailableProducts() {
+	@Override
+	public void addProduct(Product product) {
 
-        // List to store products fetched from database
-        List<Product> productList = new ArrayList<>();
+		try {
+			Connection connection = DBconfig.getConnection();
+			PreparedStatement preparedStatement = connection.prepareStatement(ProductQueries.INSERT_NEW_PRODUCT);
 
-        try {
+			preparedStatement.setLong(1, product.getSellerId());
+			preparedStatement.setString(2, product.getCategory());
+			preparedStatement.setString(3, product.getProductName());
+			preparedStatement.setString(4, product.getDescription());
+			preparedStatement.setDouble(5, product.getPrice());
+			preparedStatement.setInt(6, product.getStockQuantity());
 
-            // Step 1 : Get Database Connection
-            Connection connection = DBconfig.getConnection();
+			int rowsAffected = preparedStatement.executeUpdate();
 
-            // Step 2 : Prepare SQL Query
-            PreparedStatement preparedStatement = connection
-                    .prepareStatement(ProductQueries.VIEW_AVAILABLE_PRODUCTS);
+			if (rowsAffected > 0) {
+				System.out.println("Product added successfully.");
+			} else {
+				System.out.println("Failed to add product.");
+			}
 
-            // Step 3 : Execute Query
-            ResultSet resultSet = preparedStatement.executeQuery();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
 
-            // Step 4 : Read ResultSet
-            while (resultSet.next()) {
+	@Override
+	public List<Product> viewAvailableProducts() {
 
-                Product product = new Product();
+		// List to store products fetched from database
+		List<Product> productList = new ArrayList<>();
 
-                product.setProductId(resultSet.getLong("product_id"));
-                product.setProductName(resultSet.getString("product_name"));
-                product.setCategory(resultSet.getString("category"));
-                product.setPrice(resultSet.getDouble("price"));
-                product.setStockQuantity(resultSet.getInt("stock_quantity"));
+		try {
 
-                productList.add(product);
-            }
+			// Step 1 : Get Database Connection
+			Connection connection = DBconfig.getConnection();
 
-            // Step 5 : Close JDBC Resources
-            resultSet.close();
-            preparedStatement.close();
+			// Step 2 : Prepare SQL Query
+			PreparedStatement preparedStatement = connection.prepareStatement(ProductQueries.VIEW_AVAILABLE_PRODUCTS);
 
-        } catch (SQLException e) {
+			// Step 3 : Execute Query
+			ResultSet resultSet = preparedStatement.executeQuery();
 
-            e.printStackTrace();
-        }
+			// Step 4 : Read ResultSet
+			while (resultSet.next()) {
 
-        return productList;
-    }
+				Product product = new Product();
 
-    @Override
-    public Product displayProductDetails(long productId) {
+				product.setProductId(resultSet.getLong("product_id"));
+				product.setProductName(resultSet.getString("product_name"));
+				product.setCategory(resultSet.getString("category"));
+				product.setPrice(resultSet.getDouble("price"));
+				product.setStockQuantity(resultSet.getInt("stock_quantity"));
 
-        Product product = null;
+				productList.add(product);
+			}
 
-        try {
+			// Step 5 : Close JDBC Resources
+			resultSet.close();
+			preparedStatement.close();
 
-            Connection connection = DBconfig.getConnection();
+		} catch (SQLException e) {
 
-            PreparedStatement preparedStatement = connection.prepareStatement(
-                    ProductQueries.DISPLAY_PRODUCT_DETAILS);
+			e.printStackTrace();
+		}
 
-            // Set value for ?
-            preparedStatement.setLong(1, productId);
+		return productList;
+	}
 
-            ResultSet resultSet = preparedStatement.executeQuery();
+	@Override
+	public Product displayProductDetails(long productId) {
 
-            if (resultSet.next()) {
+		Product product = null;
 
-                product = new Product();
+		try {
 
-                product.setProductId(resultSet.getLong("product_id"));
-                product.setSellerId(resultSet.getLong("seller_id"));
-                product.setProductName(resultSet.getString("product_name"));
-                product.setDescription(resultSet.getString("description"));
-                product.setCategory(resultSet.getString("category"));
-                product.setPrice(resultSet.getDouble("price"));
-                product.setStockQuantity(resultSet.getInt("stock_quantity"));
-                product.setCreatedAt(resultSet.getTimestamp("created_at"));
-                product.setUpdatedAt(resultSet.getTimestamp("updated_at"));
-            }
+			Connection connection = DBconfig.getConnection();
 
-            resultSet.close();
-            preparedStatement.close();
+			PreparedStatement preparedStatement = connection.prepareStatement(ProductQueries.DISPLAY_PRODUCT_DETAILS);
 
-        } catch (Exception e) {
+			// Set value for ?
+			preparedStatement.setLong(1, productId);
 
-            e.printStackTrace();
-        }
+			ResultSet resultSet = preparedStatement.executeQuery();
 
-        return product;
-    }
+			if (resultSet.next()) {
 
-    @Override
-    public int showAvailableStock(long productId) {
+				product = new Product();
 
-        int stockQuantity = -1;
+				product.setProductId(resultSet.getLong("product_id"));
+				product.setSellerId(resultSet.getLong("seller_id"));
+				product.setProductName(resultSet.getString("product_name"));
+				product.setDescription(resultSet.getString("description"));
+				product.setCategory(resultSet.getString("category"));
+				product.setPrice(resultSet.getDouble("price"));
+				product.setStockQuantity(resultSet.getInt("stock_quantity"));
+				product.setCreatedAt(resultSet.getTimestamp("created_at"));
+				product.setUpdatedAt(resultSet.getTimestamp("updated_at"));
+			}
 
-        try {
+			resultSet.close();
+			preparedStatement.close();
 
-            Connection connection = DBconfig.getConnection();
+		} catch (Exception e) {
 
-            PreparedStatement preparedStatement = connection.prepareStatement(
-                    ProductQueries.SHOW_AVAILABLE_STOCK);
+			e.printStackTrace();
+		}
 
-            preparedStatement.setLong(1, productId);
+		return product;
+	}
 
-            ResultSet resultSet = preparedStatement.executeQuery();
+	@Override
+	public int showAvailableStock(long productId) {
 
-            if (resultSet.next()) {
+		int stockQuantity = -1;
 
-                stockQuantity = resultSet.getInt("stock_quantity");
-            }
+		try {
 
-            resultSet.close();
-            preparedStatement.close();
+			Connection connection = DBconfig.getConnection();
 
-        } catch (SQLException e) {
+			PreparedStatement preparedStatement = connection.prepareStatement(ProductQueries.SHOW_AVAILABLE_STOCK);
 
-            e.printStackTrace();
-        }
+			preparedStatement.setLong(1, productId);
 
-        return stockQuantity;
-    }
-    
-    @Override
-    public boolean reduceProductStock(long productId, int quantity) {
+			ResultSet resultSet = preparedStatement.executeQuery();
 
-        try {
+			if (resultSet.next()) {
 
-            Connection connection = DBconfig.getConnection();
+				stockQuantity = resultSet.getInt("stock_quantity");
+			}
 
-            PreparedStatement preparedStatement =
-                    connection.prepareStatement(ProductQueries.REDUCE_PRODUCT_STOCK);
+			resultSet.close();
+			preparedStatement.close();
 
-            preparedStatement.setInt(1, quantity);
-            preparedStatement.setLong(2, productId);
+		} catch (SQLException e) {
 
-            int rowsAffected = preparedStatement.executeUpdate();
+			e.printStackTrace();
+		}
 
-            preparedStatement.close();
+		return stockQuantity;
+	}
 
-            return rowsAffected > 0;
+	@Override
+	public boolean reduceProductStock(long productId, int quantity) {
 
-        } catch (SQLException e) {
+		try {
 
-            e.printStackTrace();
-        }
+			Connection connection = DBconfig.getConnection();
 
-        return false;
-    }
+			PreparedStatement preparedStatement = connection.prepareStatement(ProductQueries.REDUCE_PRODUCT_STOCK);
+
+			preparedStatement.setInt(1, quantity);
+			preparedStatement.setLong(2, productId);
+
+			int rowsAffected = preparedStatement.executeUpdate();
+
+			preparedStatement.close();
+
+			return rowsAffected > 0;
+
+		} catch (SQLException e) {
+
+			e.printStackTrace();
+		}
+
+		return false;
+	}
 
 }

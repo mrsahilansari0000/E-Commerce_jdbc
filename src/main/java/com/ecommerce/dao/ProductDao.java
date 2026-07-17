@@ -3,14 +3,17 @@ package com.ecommerce.dao;
 import java.util.List;
 import com.ecommerce.model.Product;
 
-public interface ProductDao {
+public interface ProductDao
+{
 
-    List<Product> viewAvailableProducts();
+	public void addProduct(Product product);
 
-    Product displayProductDetails(long productId);
+	List<Product> viewAvailableProducts();
 
-    int showAvailableStock(long productId);
-    
-    boolean reduceProductStock(long productId, int quantity);
+	Product displayProductDetails(long productId);
+
+	int showAvailableStock(long productId);
+
+	boolean reduceProductStock(long productId, int quantity);
 
 }

@@ -5,8 +5,12 @@ public class ProductQueries {
     private ProductQueries() {
         // Prevent object creation
     }
+    
+    //Inserting new product
+    public static final String INSERT_NEW_PRODUCT = 
+    		"INSERT INTO product (seller_id, category, product_name, description, price, stock_quantity) VALUES (?, ?, ?, ?, ?, ?)";
 
-    // 1. View all available products
+    // View all available products
     public static final String VIEW_AVAILABLE_PRODUCTS =
             "SELECT product_id, product_name, category, price, stock_quantity FROM product WHERE stock_quantity > 0";
 
@@ -14,11 +18,11 @@ public class ProductQueries {
     public static final String DISPLAY_PRODUCT_DETAILS =
             "SELECT * FROM product WHERE product_id = ?";
 
-    // 3. Show stock quantity of a product
+    //Show stock quantity of a product
     public static final String SHOW_AVAILABLE_STOCK =
             "SELECT stock_quantity FROM product WHERE product_id = ?";
     
-    //4. Reducing stock quantity after order confirmation
+    //Reducing stock quantity after order confirmation
     public static final String REDUCE_PRODUCT_STOCK =
             "UPDATE product SET stock_quantity = stock_quantity - ? WHERE product_id = ?";
 
