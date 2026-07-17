@@ -2,13 +2,20 @@ package com.ecommerce.ui;
 
 import java.util.Scanner;
 
+import com.ecommerce.model.Seller;
+import com.ecommerce.service.OrderService;
+import com.ecommerce.serviceimpl.OrderServiceImpl;
+
 public class OrderConsoleUI {
     private final Scanner scanner;
+    private Seller seller;
     private final int loggedInCustomerId;
+    OrderService orderService = new OrderServiceImpl();
 
-    public OrderConsoleUI(Scanner scanner, int customerId) {
+    public OrderConsoleUI(Scanner scanner, Seller seller) {
         this.scanner = scanner;
-        this.loggedInCustomerId = customerId;
+        this.seller = seller;
+        this.loggedInCustomerId = seller.getSellerId();
     }
 
     public void showMenu() {
@@ -24,12 +31,15 @@ public class OrderConsoleUI {
 
             switch (choice) {
                 case 1:
-                    System.out.println("[System Logic]: Validating stock for Customer ID " + loggedInCustomerId + "...");
-                    System.out.println("Processing inventory reduction... order stored!");
+                	long orderId = orderService.placeOrder(loggedInCustomerId);
+                	
+                	System.out.println("Order Placed Successfully");
+                	System.out.println("Track your Order using OrderID: " + orderId);
                     break;
                 case 2:
-                    System.out.println("\n--- PREVIOUS ORDERS FOR CUSTOMER " + loggedInCustomerId + " ---");
-                    break;
+//                    System.out.println("\n--- PREVIOUS ORDERS FOR CUSTOMER " + loggedInCustomerId + " ---");
+                    orderService.viewOrderHistory(loggedInCustomerId);
+                	break;
                 default:
                     System.out.println("Invalid option.");
             }

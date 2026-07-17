@@ -2,10 +2,13 @@ package com.ecommerce.ui;
 
 import java.util.Scanner;
 
+import com.ecommerce.model.Seller;
+
 public class ConsoleMenu {
 
     private final Scanner scanner = new Scanner(System.in);
-    private int loggedInCustomerId = -1; 
+    private Seller seller;
+    private int loggedInCustomerId; 
 
     public void start() {
         System.out.println("======================================");
@@ -16,7 +19,7 @@ public class ConsoleMenu {
         AuthConsoleUI authUI = new AuthConsoleUI(scanner);
         
         // Block application entry until auth returns a valid customer account ID number
-        this.loggedInCustomerId = authUI.showAuthMenu();
+        seller = authUI.showAuthMenu();
         
         // Break operation cleanly if user picked "Exit Application" on auth screen
         if (this.loggedInCustomerId == -1) {
@@ -25,14 +28,15 @@ public class ConsoleMenu {
         }
 
         // Initialize store system layouts with the verified customer identity
-        ProductConsoleUI productUI = new ProductConsoleUI(scanner, loggedInCustomerId);
-        CartConsoleUI cartUI = new CartConsoleUI(scanner, loggedInCustomerId);
-        OrderConsoleUI orderUI = new OrderConsoleUI(scanner, loggedInCustomerId);
+        ProductConsoleUI productUI = new ProductConsoleUI(scanner, seller);
+        CartConsoleUI cartUI = new CartConsoleUI(scanner, seller);
+        OrderConsoleUI orderUI = new OrderConsoleUI(scanner, seller);
 
         while (true) {
             System.out.println("\n======================================");
-            System.out.println("  E-COMMERCE MAIN MENU (User ID: " + loggedInCustomerId + ")");
-            System.out.println("======================================");
+            System.out.println("  E-COMMERCE MAIN MENU (" + 
+            	    ("customer".equals(seller.getRole()) ? "User ID: " : "Seller ID: ") 
+            	    + seller.getSellerId() + ")");            System.out.println("======================================");
             System.out.println("1. Product Management");
             System.out.println("2. Cart System");
             System.out.println("3. Order & Inventory Management");

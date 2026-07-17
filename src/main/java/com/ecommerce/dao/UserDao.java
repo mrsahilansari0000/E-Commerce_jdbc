@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 
 import com.ecommerce.config.DBconfig;
 import com.ecommerce.constants.CustomerQueries;
+import com.ecommerce.model.Seller;
 
 public class UserDao {
 
@@ -29,7 +30,7 @@ public class UserDao {
 		}
 	}
 
-	public boolean logIn(String email, String password) {
+	public Seller logIn(String email, String password) {
 
 	    try {
             Connection connection = DBconfig.getConnection();
@@ -39,12 +40,23 @@ public class UserDao {
 
 	        ResultSet result = pstmt.executeQuery();
 
-	        return result.next();
-
+	        while (result.next()) {
+	        	int user_id = result.getInt(1);
+	        	String username = result.getString(2);
+	        	String email1 = result.getString(3);
+	        	String password1 = result.getString(4);
+	        	String role = result.getString(6);
+	        	
+	        	Seller seller = new Seller(user_id, username, email1, password1, role);
+	        	
+	        	return seller;
+	        }
 	        
 	    } catch (Exception e) {
 	        System.err.println("Error from UserDao: " + e.getMessage());
-	        return false;
+	        return null;
 	    }
+	    
+	    return null;
 	}	
 }
